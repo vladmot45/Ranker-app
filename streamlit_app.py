@@ -10,6 +10,8 @@ if "screen" not in st.session_state:
     st.session_state.screen = "rate"   # "rate" or "review"
 if "rating" not in st.session_state:
     st.session_state.rating = None
+if "redirect" not in st.session_state:
+    st.session_state.redirect = False
 
 def go_to_review(r: int):
     st.session_state.rating = r
@@ -19,8 +21,8 @@ def go_back():
     st.session_state.screen = "rate"
     st.session_state.rating = None
 
-def go_google_one_click():
-    # Attempts true one-click navigation. May still be blocked by browser/security policies on Streamlit Cloud.
+def trigger_google_redirect():
+    # One-click redirect attempt. Some browsers/platform policies may still block it.
     st.components.v1.html(
         f"""
         <script>
@@ -33,7 +35,6 @@ def go_google_one_click():
         """,
         height=0,
     )
-    st.stop()
 
 # --- CUSTOM STAR STYLE ---
 st.markdown(
@@ -60,37 +61,43 @@ if st.session_state.screen == "rate":
     st.title("Give us a rating!")
     st.markdown('<div class="center-col">', unsafe_allow_html=True)
 
-    # 5 stars (top)
+    # Render all buttons first, collect clicks
     st.markdown('<div class="star-btn">', unsafe_allow_html=True)
-    if st.button("⭐⭐⭐⭐⭐", key="r5"):
-        go_google_one_click()
+    b5 = st.button("⭐⭐⭐⭐⭐", key="r5")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 4 stars
     st.markdown('<div class="star-btn">', unsafe_allow_html=True)
-    if st.button("⭐⭐⭐⭐", key="r4"):
-        go_google_one_click()
+    b4 = st.button("⭐⭐⭐⭐", key="r4")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 3 stars
     st.markdown('<div class="star-btn">', unsafe_allow_html=True)
-    if st.button("⭐⭐⭐", key="r3"):
-        go_to_review(3)
+    b3 = st.button("⭐⭐⭐", key="r3")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 2 stars
     st.markdown('<div class="star-btn">', unsafe_allow_html=True)
-    if st.button("⭐⭐", key="r2"):
-        go_to_review(2)
+    b2 = st.button("⭐⭐", key="r2")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 1 star (bottom)
     st.markdown('<div class="star-btn">', unsafe_allow_html=True)
-    if st.button("⭐", key="r1"):
+    b1 = st.button("⭐", key="r1")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Handle action AFTER rendering all five
+    if b1:
         go_to_review(1)
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.rerun()
+    if b2:
+        go_to_review(2)
+        st.rerun()
+    if b3:
+        go_to_review(3)
+        st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    if b4 or b5:
+        trigger_google_redirect()
+        # no st.stop() here; page stays stable even if redirect is blocked
 
 # --- SCREEN 2 : REVIEW ---
 elif st.session_state.screen == "review":
@@ -104,3 +111,4 @@ elif st.session_state.screen == "review":
         st.success("Thank you for your feedback.")
     if col2.button("Back"):
         go_back()
+        st.rerun()
