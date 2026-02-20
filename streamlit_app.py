@@ -19,32 +19,44 @@ def go_back():
     st.session_state.screen = "rate"
     st.rerun()
 
-st.markdown(
-    """
+st.markdown("""
 <style>
-.center-col { max-width: 320px; margin: 0 auto; }
+
+/* center column */
+.center-col {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* BIG stars for HTML links (4★,5★) */
 .starlink {
-  display: block;
-  text-align: center;
-  font-size: 80px;
-  line-height: 1.1;
-  padding: 18px 12px;
-  margin: 10px 0;
-  border: 1px solid rgba(49,51,63,0.2);
-  border-radius: 12px;
-  text-decoration: none !important;
+    display: block;
+    text-align: center;
+    font-size: 80px;
+    padding: 18px 12px;
+    margin: 12px 0;
+    border-radius: 12px;
+    border: 1px solid rgba(49,51,63,0.2);
+    text-decoration: none !important;
 }
-.starlink:hover { background: rgba(49,51,63,0.06); }
-.starbtn button {
-  width: 100% !important;
-  font-size: 80px !important;
-  padding: 18px 12px !important;
-  border-radius: 12px !important;
+
+/* BIG Streamlit buttons (3★,2★,1★) */
+div.stButton > button {
+    width: 100%;
+    font-size: 80px !important;
+    padding: 18px 12px !important;
+    border-radius: 12px !important;
+    margin: 12px 0 !important;
 }
+
+/* remove small default spacing */
+div.stButton {
+    width: 100%;
+}
+
 </style>
-""",
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
 if st.session_state.screen == "rate":
     st.title("Give us a rating!")
