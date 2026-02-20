@@ -4,95 +4,79 @@ GOOGLE_REVIEW_URL = "https://www.google.com/maps/place/Z%C5%82ote+ziarno+Sp.+Z.o
 
 st.set_page_config(page_title="Give us a rating!", layout="centered")
 
+# --- STATE ---
 if "screen" not in st.session_state:
-    st.session_state.screen = "rate"
+    st.session_state.screen = "rate"   # "rate" or "review"
 if "rating" not in st.session_state:
     st.session_state.rating = None
-
-def go_to_review(r: int):
-    st.session_state.rating = r
-    st.session_state.screen = "review"
-    st.rerun()
 
 def go_back():
     st.session_state.rating = None
     st.session_state.screen = "rate"
+    st.query_params.clear()
     st.rerun()
 
+# --- STYLE (all rows are the same: HTML cards) ---
 st.markdown("""
 <style>
+.center-col { max-width: 340px; margin: 0 auto; }
 
-/* center column */
-.center-col {
-    max-width: 320px;
-    margin-left: auto;
-    margin-right: auto;
+.starcard{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 80px;
+  height: 140px;
+  margin: 16px 0;
+  border-radius: 16px;
+  border: 1px solid rgba(49,51,63,0.25);
+  background: rgba(255,255,255,0.02);
+  text-decoration: none !important;
+  cursor: pointer;
 }
-
-/* BIG stars for HTML links (4★,5★) */
-.starlink {
-    display: block;
-    text-align: center;
-    font-size: 80px;
-    padding: 18px 12px;
-    margin: 12px 0;
-    border-radius: 12px;
-    border: 1px solid rgba(49,51,63,0.2);
-    text-decoration: none !important;
+.starcard:hover{
+  background: rgba(255,255,255,0.05);
 }
-
-/* BIG Streamlit buttons (3★,2★,1★) */
-div.stButton > button {
-    width: 100%;
-    font-size: 80px !important;
-    padding: 18px 12px !important;
-    border-radius: 12px !important;
-    margin: 12px 0 !important;
-}
-
-/* remove small default spacing */
-div.stButton {
-    width: 100%;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
+# --- QUERY PARAM HANDLER FOR 1–3 STARS ---
+qp = st.query_params
+if st.session_state.screen == "rate" and "rate" in qp:
+    try:
+        r = int(qp["rate"])
+        if r in (1, 2, 3):
+            st.session_state.rating = r
+            st.session_state.screen = "review"
+            st.query_params.clear()  # clean URL after selection
+    except Exception:
+        st.query_params.clear()
+
+# --- UI ---
 if st.session_state.screen == "rate":
     st.title("Give us a rating!")
     st.markdown('<div class="center-col">', unsafe_allow_html=True)
 
-    # 5 and 4 stars = direct external link (one click, Cloud-safe)
+    # 5–4 stars: one-click external (Cloud-safe)
     st.markdown(
-        f'<a class="starlink" href="{GOOGLE_REVIEW_URL}" target="_blank" rel="noopener noreferrer">{"⭐"*5}</a>',
+        f'<a class="starcard" href="{GOOGLE_REVIEW_URL}" target="_blank" rel="noopener noreferrer">{"⭐"*5}</a>',
         unsafe_allow_html=True
     )
     st.markdown(
-        f'<a class="starlink" href="{GOOGLE_REVIEW_URL}" target="_blank" rel="noopener noreferrer">{"⭐"*4}</a>',
+        f'<a class="starcard" href="{GOOGLE_REVIEW_URL}" target="_blank" rel="noopener noreferrer">{"⭐"*4}</a>',
         unsafe_allow_html=True
     )
 
-    # 3/2/1 stars = Streamlit buttons (go to review screen)
-    st.markdown('<div class="starbtn">', unsafe_allow_html=True)
-    if st.button("⭐⭐⭐", key="r3"):
-        go_to_review(3)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="starbtn">', unsafe_allow_html=True)
-    if st.button("⭐⭐", key="r2"):
-        go_to_review(2)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="starbtn">', unsafe_allow_html=True)
-    if st.button("⭐", key="r1"):
-        go_to_review(1)
-    st.markdown('</div>', unsafe_allow_html=True)
+    # 3–1 stars: same-size cards, one-click, routed via query param
+    st.markdown(f'<a class="starcard" href="?rate=3">{"⭐"*3}</a>', unsafe_allow_html=True)
+    st.markdown(f'<a class="starcard" href="?rate=2">{"⭐"*2}</a>', unsafe_allow_html=True)
+    st.markdown(f'<a class="starcard" href="?rate=1">{"⭐"*1}</a>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 elif st.session_state.screen == "review":
     st.title("Tell us what went wrong")
-    st.write(f"Rating: {'⭐' * st.session_state.rating}")
+    st.write(f"Rating: {'⭐' * (st.session_state.rating or 0)}")
 
     st.text_area("Write your review", placeholder="Explain your experience...")
 
