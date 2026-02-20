@@ -50,19 +50,27 @@ if st.session_state.screen == "rate":
     # 5 stars (top)
     st.markdown('<div class="star-btn">', unsafe_allow_html=True)
     if st.button("⭐⭐⭐⭐⭐", key="r5"):
+        st.success("Thank you!")
         st.markdown(
-            f'<meta http-equiv="refresh" content="0; url={GOOGLE_REVIEW_URL}">',
+            f'<a href="{GOOGLE_REVIEW_URL}" target="_blank">'
+            f'<button style="font-size:20px;padding:12px 24px;">'
+            f'Continue to Google Reviews</button></a>',
             unsafe_allow_html=True
         )
+        st.stop()
     st.markdown('</div>', unsafe_allow_html=True)
 
     # 4 stars
     st.markdown('<div class="star-btn">', unsafe_allow_html=True)
     if st.button("⭐⭐⭐⭐", key="r4"):
+        st.success("Thank you!")
         st.markdown(
-            f'<meta http-equiv="refresh" content="0; url={GOOGLE_REVIEW_URL}">',
+            f'<a href="{GOOGLE_REVIEW_URL}" target="_blank">'
+            f'<button style="font-size:20px;padding:12px 24px;">'
+            f'Continue to Google Reviews</button></a>',
             unsafe_allow_html=True
         )
+        st.stop()
     st.markdown('</div>', unsafe_allow_html=True)
 
     # 3 stars
