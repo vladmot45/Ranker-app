@@ -1,6 +1,6 @@
 import streamlit as st
 
-GOOGLE_REVIEW_URL = "https://www.google.com/maps/place/Z%C5%82ote+ziarno+Sp.+Z.o.o/@52.2254847,21.0050983,17z/data=!3m1!4b1!4m6!3m5!1s0x471ecc81b62f0f05:0xf54b887a45c43bfc!8m2!3d52.2254847!4d21.0050983!16s%2Fg%2F11mv_49jpf?entry=ttu&g_ep=EgoyMDI2MDIxNy4wIKXMDSoASAFQAw%3D%3D"
+GOOGLE_REVIEW_URL = "https://g.page/r/Cfw7xEV6iEv1EBM/review"
 
 st.set_page_config(page_title="Give us a rating!", layout="centered")
 
